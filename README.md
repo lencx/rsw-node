@@ -18,12 +18,6 @@
 
 ## Get Started
 
-Use `DEBUG=rsw:cmd` to enable [debug](https://github.com/visionmedia/debug) mode
-
-```bash
-DEBUG=rsw:cmd yarn rsw:deploy
-```
-
 ```bash
 # rsw -h: command help
 # You can use the `rsw` command alone
@@ -32,7 +26,7 @@ npm install -g rsw-node
 
 <img width="640" src="https://github.com/lencx/rsw-node/raw/main/assets/rsw-cmd.png" alt="rsw cmd" />
 
-<img width="400" src="https://github.com/lencx/rsw-node/raw/main/assets/rsw-cmd-help.png" alt="rsw cmd help" />
+<img width="450" src="https://github.com/lencx/rsw-node/raw/main/assets/rsw-cmd-help.png" alt="rsw cmd help" />
 
 ### Step1
 
@@ -57,7 +51,8 @@ For example:
   "root": ".",
   "crates": [
     "@rsw/chasm",
-    "@rsw/game-of-life"
+    "@rsw/game-of-life",
+    { "name": "rsw-hello", "outDir": "custom/path" }
   ]
 }
 ```
@@ -66,7 +61,7 @@ For example:
 
 Add `rsw:deploy` to `package.json`
 
-```json
+```jsonc
 {
   "scripts": {
     "dev": "vite",
@@ -75,6 +70,13 @@ Add `rsw:deploy` to `package.json`
   },
 }
 ```
+
+Use `DEBUG=rsw:cmd` to enable [debug](https://github.com/visionmedia/debug) mode
+
+```bash
+DEBUG=rsw:cmd yarn rsw:deploy
+```
+
 
 ![debug](https://github.com/lencx/rsw-node/raw/main/assets/rsw-deploy.png)
 
