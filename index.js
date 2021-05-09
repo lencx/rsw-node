@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
-const chalk = require('chalk');
-const path = require('path');
 const os = require('os');
+const path = require('path');
+const chalk = require('chalk');
 const which = require('which');
 const debug = require('debug')('rsw:cmd');
-const argv = require('minimist')(process.argv.slice(2));
 const spawnSync = require('child_process').spawnSync;
+const argv = require('minimist')(process.argv.slice(2));
 
 const isWin = os.platform() === 'win32';
 const wpCmd = () => (isWin ? 'wasm-pack.exe' : 'wasm-pack');
@@ -19,18 +19,17 @@ async function init() {
   if (!_argv0) {
     if (argv.h || argv.help) {
       cmdHelp();
-      process.exit(1);
+      process.exit();
     }
   }
 
   debug('start');
+  debug(`[process.cwd] ${process.cwd()}`)
   checkWpCmd();
 
   let cratesMap = new Map();
-
-  debug(`[process.cwd] ${process.cwd()}`)
-
   const hasRswrc = fs.existsSync('.rswrc.json');
+
   if (hasRswrc) {
     debug('`.rswrc.json` file exists');
     const rswrc = fs.readFileSync(`.rswrc.json`, 'utf8');
@@ -47,7 +46,6 @@ async function init() {
 
     rcJSON.crates.forEach(i => {
       let rswCrate, pkgName, scope, outDir;
-
       const args = ['build', '--release', '--target', 'web'];
 
       rswCrate = getCrateName(i);
@@ -78,12 +76,11 @@ async function init() {
       if (p.status !== 0) {
         debug(`[wasm-pack build error](${rswCrate}) ${args.join(' ')}`);
         console.log(chalk.red(`[rsw::cmd::error] wasm-pack for crate ${rswCrate} failed.`));
-
-        throw p.error;
+        throw chalk.red(p.error);
       }
 
       debug(`[wasm-pack build success](${rswCrate}) ${outDir}`);
-      cratesMap.set(rswCrate, outDir)
+      cratesMap.set(rswCrate, outDir);
     });
   } else {
     debug('`.rswrc.json` file does not exist');
@@ -91,7 +88,7 @@ async function init() {
       chalk.bold.red('[rsw::cmd::config]'),
       chalk.red('missing `.rswrc.json` file'),
     );
-    cmdHelp()
+    cmdHelp();
     process.exit();
   }
 
@@ -101,11 +98,11 @@ async function init() {
     stdio: 'inherit',
   });
 
-  console.log(chalk.green(`\n[rsw::cmd::link]`))
+  console.log(chalk.green(`\n[rsw::cmd::link]`));
   cratesMap.forEach((val, key) => {
     console.log(
       chalk.yellow(`  ↳ ${key} `),
-      chalk.blue(` ${val} `)
+      chalk.blue(` ${val} `),
     );
   })
 }
