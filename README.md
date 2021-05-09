@@ -26,8 +26,13 @@ DEBUG=rsw:cmd yarn rsw:deploy
 
 ```bash
 # rsw -h: command help
+# You can use the `rsw` command alone
 npm install -g rsw-node
 ```
+
+<img width="640" src="https://github.com/lencx/rsw-node/raw/main/assets/rsw-cmd.png" alt="rsw cmd" />
+
+<img width="400" src="https://github.com/lencx/rsw-node/raw/main/assets/rsw-cmd-help.png" alt="rsw cmd help" />
 
 ### Step1
 
@@ -71,7 +76,7 @@ Add `rsw:deploy` to `package.json`
 }
 ```
 
-![debug](./assets/rsw-deploy.png)
+![debug](https://github.com/lencx/rsw-node/raw/main/assets/rsw-deploy.png)
 
 ## License
 

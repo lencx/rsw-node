@@ -1,6 +1,6 @@
 {
   "name": "rsw-node",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "index.js",
   "author": "lencx <cxin1314@gmail.com>",
   "license": "MIT",

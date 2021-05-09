@@ -18,7 +18,7 @@ async function init() {
 
   if (!_argv0) {
     if (argv.h || argv.help) {
-      console.log(cmdHelp());
+      cmdHelp();
       process.exit(1);
     }
   }
@@ -91,6 +91,7 @@ async function init() {
       chalk.bold.red('[rsw::cmd::config]'),
       chalk.red('missing `.rswrc.json` file'),
     );
+    cmdHelp()
     process.exit();
   }
 
@@ -155,7 +156,7 @@ function checkWpCmd() {
 }
 
 function cmdHelp() {
-  return `
+  return console.log(`
 Command Help:
 ${chalk.magenta('[rsw]')}: https://github.com/lencx/rsw-node
 
@@ -175,5 +176,5 @@ Usage:
         "scripts": {
           "rsw:deploy": "rsw && npm run build"
         }
-      }`)}`;
+      }`)}`);
 }
