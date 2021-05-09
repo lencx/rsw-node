@@ -5,19 +5,24 @@ const chalk = require('chalk');
 const path = require('path');
 const os = require('os');
 const which = require('which');
+const debug = require('debug')('rsw:cmd');
 const spawnSync = require('child_process').spawnSync;
 
 const isWin = os.platform() === 'win32';
-const wpCmd = () => isWin ? 'wasm-pack.exe' : 'wasm-pack';
+const wpCmd = () => (isWin ? 'wasm-pack.exe' : 'wasm-pack');
 const getCrateName = (crate) => (typeof crate === 'object' ? crate.name : crate);
 
 async function init() {
+  debug('start');
   checkWpCmd();
 
   let cratesMap = new Map();
 
+  debug(`[process.cwd] ${process.cwd()}`)
+
   const hasRswrc = fs.existsSync('.rswrc.json');
   if (hasRswrc) {
+    debug('`.rswrc.json` file exists');
     const rswrc = fs.readFileSync(`.rswrc.json`, 'utf8');
     const rcJSON = JSON.parse(rswrc);
 
@@ -49,19 +54,29 @@ async function init() {
       if (scope) args.push('--scope', scope);
       if (outDir) args.push('--out-dir', outDir);
 
+      const cmdCwd = path.resolve(process.cwd(), rcJSON.root || '.', rswCrate);
+
+      debug(`[wasm-pack build](${rswCrate}) ${args.join(' ')}`);
+      debug(`[wasm-pack cwd](${rswCrate}) ${cmdCwd}`);
+
       let p = spawnSync(`${wpCmd()}`, args, {
         shell: true,
-        cwd: path.resolve(process.cwd(), rswCrate),
+        cwd: cmdCwd,
         stdio: 'inherit',
       });
 
       if (p.status !== 0) {
-        throw chalk.red(`[rsw::cmd::error] wasm-pack for crate ${rswCrate} failed.`);
+        debug(`[wasm-pack build error](${rswCrate}) ${args.join(' ')}`);
+        console.log(chalk.red(`[rsw::cmd::error] wasm-pack for crate ${rswCrate} failed.`));
+
+        throw p.error;
       }
 
-      cratesMap.set(getCrateName(i), outDir)
+      debug(`[wasm-pack build success](${rswCrate}) ${outDir}`);
+      cratesMap.set(rswCrate, outDir)
     });
   } else {
+    debug('`.rswrc.json` file does not exist');
     console.log(
       chalk.bold.red('[rsw::cmd::config]'),
       chalk.red('missing `.rswrc.json` file'),
@@ -90,6 +105,7 @@ init().catch((e) => {
 
 function getCratePath(crate, root) {
   const _root = path.resolve(root, getCrateName(crate));
+  debug(`[crate root] ${_root}`);
 
   if (!_root.startsWith(process.cwd())) {
     console.log(
@@ -114,17 +130,16 @@ function getCratePath(crate, root) {
 };
 
 function checkWpCmd() {
-  const wasmPack = which.sync('wasm-pack', { nothrow: true });
+  const wasmPack = which.sync(wpCmd(), { nothrow: true });
+
   if (!wasmPack) {
-    console.log(
-      chalk.bold.red('[rsw::cmd::error]'),
-      chalk.red('Cannot find wasm-pack in your PATH. Please make sure wasm-pack is installed.'),
-    );
-    console.log(
-      chalk.bold.gray('[rsw::cmd::INFO]'),
-      'wasm-pack install:',
-      chalk.green('https://github.com/rustwasm/wasm-pack'),
-    );
-    process.exit();
+    debug('Cannot find `wasm-pack` in your PATH');
+    spawnSync(`npm`, ['install', '-g', 'wasm-pack'], {
+      shell: true,
+      cwd: process.cwd(),
+      stdio: 'inherit',
+    });
+    debug('`wasm-pack` installation complete');
   }
+  debug('`wasm-pack` command exists');
 }

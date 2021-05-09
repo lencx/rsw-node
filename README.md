@@ -18,6 +18,14 @@
 
 ## Get Started
 
+Use `DEBUG=rsw:cmd` to enable [debug](https://github.com/visionmedia/debug) mode
+
+```bash
+DEBUG=rsw:cmd npm run rsw:deploy
+```
+
+![debug](./assets/debug.png)
+
 ### Step1
 
 ```bash
