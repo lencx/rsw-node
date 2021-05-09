@@ -6,6 +6,7 @@ const path = require('path');
 const os = require('os');
 const which = require('which');
 const debug = require('debug')('rsw:cmd');
+const argv = require('minimist')(process.argv.slice(2));
 const spawnSync = require('child_process').spawnSync;
 
 const isWin = os.platform() === 'win32';
@@ -13,6 +14,15 @@ const wpCmd = () => (isWin ? 'wasm-pack.exe' : 'wasm-pack');
 const getCrateName = (crate) => (typeof crate === 'object' ? crate.name : crate);
 
 async function init() {
+  const _argv0 = argv._[0];
+
+  if (!_argv0) {
+    if (argv.h || argv.help) {
+      console.log(cmdHelp());
+      process.exit(1);
+    }
+  }
+
   debug('start');
   checkWpCmd();
 
@@ -142,4 +152,28 @@ function checkWpCmd() {
     debug('`wasm-pack` installation complete');
   }
   debug('`wasm-pack` command exists');
+}
+
+function cmdHelp() {
+  return `
+Command Help:
+${chalk.magenta('[rsw]')}: https://github.com/lencx/rsw-node
+
+Usage:
+  step1: create ${chalk.green('.rswrc.json')} in the project root path.
+  step2: .rswrc.json
+      ${chalk.green(`{
+        "root": ".",
+        "crates": []
+      }`)}
+      ${chalk.yellow('root')}: The default is the project root path, which supports customization,
+            but cannot exceed the project root path.
+      ${chalk.yellow('crates')}: and \`[vite-plugin-rsw]: plugin options\` configuration is the same.
+            ${chalk.cyan('https://github.com/lencx/vite-plugin-rsw#plugin-options')}
+  step3: package.json
+      ${chalk.green(`{
+        "scripts": {
+          "rsw:deploy": "rsw && npm run build"
+        }
+      }`)}`;
 }

@@ -21,10 +21,13 @@
 Use `DEBUG=rsw:cmd` to enable [debug](https://github.com/visionmedia/debug) mode
 
 ```bash
-DEBUG=rsw:cmd npm run rsw:deploy
+DEBUG=rsw:cmd yarn rsw:deploy
 ```
 
-![debug](./assets/debug.png)
+```bash
+# rsw -h: command help
+npm install -g rsw-node
+```
 
 ### Step1
 
@@ -67,6 +70,8 @@ Add `rsw:deploy` to `package.json`
   },
 }
 ```
+
+![debug](./assets/rsw-deploy.png)
 
 ## License
 
