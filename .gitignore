@@ -1,0 +1,11 @@
+.DS_Store
+
+
+node_modules
+*.lock
+package-lock.json
+
+# rust
+target/
+Cargo.lock
+pkg/

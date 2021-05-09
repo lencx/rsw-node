@@ -1,0 +1,29 @@
+{
+  "name": "rsw-node",
+  "version": "0.0.1",
+  "main": "index.js",
+  "author": "lencx <cxin1314@gmail.com>",
+  "license": "MIT",
+  "bin": {
+    "rsw": "index.js"
+  },
+  "keywords": [
+    "rsw",
+    "wasm",
+    "vite",
+    "shell",
+    "rust",
+    "wasm-pack",
+    "vite-plugin-rsw"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lencx/rsw-node"
+  },
+  "homepage": "https://github.com/lencx/rsw-node",
+  "bugs": "https://github.com/lencx/rsw-node/issues",
+  "dependencies": {
+    "chalk": "^4.1.1",
+    "which": "^2.0.2"
+  }
+}
