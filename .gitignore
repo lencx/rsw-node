@@ -1,5 +1,6 @@
 .DS_Store
 
+.history
 node_modules
 *.lock
 package-lock.json
@@ -8,3 +9,4 @@ package-lock.json
 target/
 Cargo.lock
 pkg/
+test/.rsw
