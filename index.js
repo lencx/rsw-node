@@ -103,7 +103,8 @@ async function init() {
     cratesMap.set(rswCrate, outDir);
   });
 
-  spawnSync(`npm`, ['link', ...Array.from(cratesMap.values())], {
+  const cratePaths = Array.from(cratesMap.values()).map(p => `'${p}'`);
+  spawnSync(`npm`, ['link', ...cratePaths], {
     shell: true,
     cwd: process.cwd(),
     stdio: 'inherit',
