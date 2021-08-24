@@ -78,9 +78,9 @@ async function init() {
       pkgName = rswCrate;
     }
 
-    args.push('--out-name', pkgName);
-    if (scope) args.push('--scope', scope);
-    if (outDir) args.push('--out-dir', outDir);
+    args.push('--out-name', `'${pkgName}'`);
+    if (scope) args.push('--scope', `'${scope}'`);
+    if (outDir) args.push('--out-dir', `'${outDir}'`);
 
     const cmdCwd = path.resolve(process.cwd(), rswCrate);
 
