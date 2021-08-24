@@ -14,6 +14,16 @@ const isWin = os.platform() === 'win32';
 const wpCmd = isWin ? 'wasm-pack.exe' : 'wasm-pack';
 const getCrateName = (crate) => (typeof crate === 'object' ? crate.name : crate);
 
+// fix: https://github.com/lencx/vite-plugin-rsw/issues/20#issuecomment-904562812
+// ------------------------------------------
+// escape a space in a file path in node.js
+// normalizePath('foo bar') // 'foo\\ bar'
+// -------------------------------------------
+// see: https://vitejs.dev/guide/api-plugin.html#path-normalization
+// normalizePath('foo\\bar') // 'foo/bar'
+// normalizePath('foo/bar') // 'foo/bar'
+const normalizePath = (_path) => _path.replace('\\', '/').replace(/(\s+)/g, '\\$1');
+
 async function init() {
   const _argv0 = argv._[0];
 
@@ -41,7 +51,8 @@ async function init() {
     process.exit();
   }
 
-  rimraf.sync(`${process.cwd()}/.rsw/crates`);
+  const dist = normalizePath(path.join(process.cwd(), '.rsw/crates'));
+  rimraf.sync(dist);
 
   debug('`.rsw.json` file exists');
   const rswrc = fs.readFileSync(`.rsw.json`, 'utf8');
@@ -56,19 +67,18 @@ async function init() {
     process.exit();
   }
 
-  rcJSON.crates.forEach(i => {
-    let rswCrate, pkgName, scope, outDir;
+  const crateList = rcJSON.crates.map((i) => getCrateName(i));
+  spawnSync(`npm`, ['unlink', '-g', crateList.join(' ')], {
+    shell: true,
+    cwd: process.cwd(),
+    stdio: 'pipe',
+  });
+
+  crateList.forEach((rswCrate) => {
+    let pkgName, scope, outDir;
     const args = ['build', '--release', '--target', 'web'];
 
-    rswCrate = getCrateName(i);
-
-    spawnSync(`npm`, ['unlink', '-g', rswCrate], {
-      shell: true,
-      cwd: process.cwd(),
-      stdio: 'inherit',
-    });
-
-    outDir = getCratePath(i, `${process.cwd()}/.rsw/crates`);
+    outDir = getCratePath(rswCrate, dist);
 
     if (rswCrate.startsWith('@')) {
       const a = rswCrate.split(/@|\//);
@@ -82,7 +92,7 @@ async function init() {
     if (scope) args.push('--scope', `'${scope}'`);
     if (outDir) args.push('--out-dir', `'${outDir}'`);
 
-    const cmdCwd = path.resolve(process.cwd(), rswCrate);
+    const cmdCwd = normalizePath(path.resolve(process.cwd(), rswCrate));
 
     debug(`[wasm-pack build](${rswCrate}) ${args.join(' ')}`);
     debug(`[wasm-pack cwd](${rswCrate}) ${cmdCwd}`);
