@@ -14,12 +14,6 @@ const isWin = os.platform() === 'win32';
 const wpCmd = isWin ? 'wasm-pack.exe' : 'wasm-pack';
 const getCrateName = (crate) => (typeof crate === 'object' ? crate.name : crate);
 
-// fix: https://github.com/lencx/vite-plugin-rsw/issues/20#issuecomment-904562812
-// ------------------------------------------
-// escape a space in a file path in node.js
-// normalizePath('/Users/foo bar') // "/Users/foo bar"
-const normalizePath = (_path) => `"${_path}"`;
-
 async function init() {
   const _argv0 = argv._[0];
 
@@ -47,7 +41,7 @@ async function init() {
     process.exit();
   }
 
-  const dist = normalizePath(path.join(process.cwd(), '.rsw/crates'));
+  const dist = path.join(process.cwd(), '.rsw/crates');
   rimraf.sync(dist);
 
   debug('`.rsw.json` file exists');
@@ -84,9 +78,9 @@ async function init() {
       pkgName = rswCrate;
     }
 
-    args.push('--out-name', `'${pkgName}'`);
-    if (scope) args.push('--scope', `'${scope}'`);
-    if (outDir) args.push('--out-dir', `'${outDir}'`);
+    args.push('--out-name', `"${pkgName}"`);
+    if (scope) args.push('--scope', `"${scope}"`);
+    if (outDir) args.push('--out-dir', `"${outDir}"`);
 
     const cmdCwd = path.resolve(process.cwd(), rswCrate);
 
@@ -109,7 +103,7 @@ async function init() {
     cratesMap.set(rswCrate, outDir);
   });
 
-  const cratePaths = Array.from(cratesMap.values()).map(p => `'${p}'`);
+  const cratePaths = Array.from(cratesMap.values()).map(p => `"${p}"`);
   spawnSync(`npm`, ['link', ...cratePaths], {
     shell: true,
     cwd: process.cwd(),
