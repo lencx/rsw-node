@@ -17,12 +17,8 @@ const getCrateName = (crate) => (typeof crate === 'object' ? crate.name : crate)
 // fix: https://github.com/lencx/vite-plugin-rsw/issues/20#issuecomment-904562812
 // ------------------------------------------
 // escape a space in a file path in node.js
-// normalizePath('foo bar') // 'foo\\ bar'
-// -------------------------------------------
-// see: https://vitejs.dev/guide/api-plugin.html#path-normalization
-// normalizePath('foo\\bar') // 'foo/bar'
-// normalizePath('foo/bar') // 'foo/bar'
-const normalizePath = (_path) => _path.replace('\\', '/').replace(/(\s+)/g, '\\$1');
+// normalizePath('/Users/foo bar') // "/Users/foo bar"
+const normalizePath = (_path) => `"${_path}"`;
 
 async function init() {
   const _argv0 = argv._[0];
@@ -92,7 +88,7 @@ async function init() {
     if (scope) args.push('--scope', `'${scope}'`);
     if (outDir) args.push('--out-dir', `'${outDir}'`);
 
-    const cmdCwd = normalizePath(path.resolve(process.cwd(), rswCrate));
+    const cmdCwd = path.resolve(process.cwd(), rswCrate);
 
     debug(`[wasm-pack build](${rswCrate}) ${args.join(' ')}`);
     debug(`[wasm-pack cwd](${rswCrate}) ${cmdCwd}`);
